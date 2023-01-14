@@ -1,5 +1,5 @@
 [package]
-name = "Most remote point calculator"
+name = "remote-point-calculator"
 version = "0.1.0"
 edition = "2021"
 

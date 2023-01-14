@@ -103,15 +103,20 @@ impl PartialOrd for WeightedPoint {
 }
 
 #[wasm_bindgen]
-pub fn find_most_distant_point(points: &Points) -> Point {
-    let candidates = find_best_points(float_iter(-PI / 2.0, PI / 2.0, 180), || float_iter(-PI, PI, 360), points, R * PI / 180.0);
+pub fn distance_between(p1: Point, p2: Point) -> f32 {
+    distance(&p1.into(), &p2.into())
+}
+
+#[wasm_bindgen]
+pub fn find_most_distant_point(points: Points) -> Point {
+    let candidates = find_best_points(float_iter(-PI / 2.0, PI / 2.0, 180), || float_iter(-PI, PI, 360), &points, R * PI / 180.0);
 
     let mut best = None;
     for candidate in candidates {
         let best_this_candidate = find_best_points(
             float_iter(candidate.point.lat - PI / 360.0, candidate.point.lat + PI / 360.0, 100),
             || float_iter(candidate.point.long - PI / 360.0, candidate.point.long + PI / 360.0, 100),
-            points,
+            &points,
             0.0)
             .get(0).unwrap().clone();
         best = match best {

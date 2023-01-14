@@ -1,3 +1,4 @@
+import { computeFurthestPoint, distanceBetween } from "./calculator";
 
 export type SubscriberCallback = (inputs: Location[], output: Location | undefined) => void;
 
@@ -7,7 +8,7 @@ export class Model {
     private output: Location | undefined = undefined;
     private subscribers: SubscriberCallback[] = [];
 
-    public constructor(private computeFurthestPoint: (points: Location[]) => Promise<Location | undefined>) {}
+    public constructor() {}
 
     public subscribe(callback: SubscriberCallback) {
         this.subscribers.push(callback);
@@ -15,29 +16,39 @@ export class Model {
     }
 
     public addInput(input: Location) {
-        this.removeInputInternal(input);
         this.inputs.push(input);
         this.update();
     }
 
-    public removeInput(input: Location) {
-        this.removeInputInternal(input);
+    public removeInput(index: number) {
+        this.inputs.splice(index, 1);
         this.update();
     }
 
-    private removeInputInternal(toRemove: Location) {
-        for (let i = 0; i < this.inputs.length;) {
-            let existing = this.inputs[i];
-            if (toRemove.lat == existing.lat && toRemove.long == existing.long) {
-                this.inputs.splice(i, 1);
-            } else {
-                i++;
-            }
+    public getInput(index: number): SelectedLocation {
+        return {
+            location: this.inputs[index],
+            inputIndex: index,
+        };
+    }
+
+    public getOutput(): SelectedLocation | undefined {
+        return this.output && {
+            location: this.output,
+            isOutput: true,
+        };
+    }
+
+    public async getDistances(location: Location): Promise<Map<Location, number>> {
+        let result = new Map<Location, number>();
+        for (let l of this.inputs) {
+            result.set(l, await distanceBetween(l, location));
         }
+        return result;
     }
 
     private async update() {
-        this.output = await this.computeFurthestPoint(this.inputs);
+        this.output = await computeFurthestPoint(this.inputs);
         for (let subscriber of this.subscribers) {
             subscriber(this.inputs, this.output);
         }
@@ -48,4 +59,10 @@ export interface Location {
     lat: number;
     long: number;
     name?: string;
+}
+
+export interface SelectedLocation {
+    location: Location,
+    inputIndex?: number,
+    isOutput?: boolean,
 }

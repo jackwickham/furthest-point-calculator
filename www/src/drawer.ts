@@ -1,17 +1,18 @@
-import { Location, Model } from "./model";
+import { Location, Model, SelectedLocation } from "./model";
+import { formatLatLong, createLocationRow } from "./templates";
 
 const HIDE_CLASS = "hide";
-const GO_TO_BUTTON_CLASS = "location-button-go-to";
+const CLASS_GO_TO_BUTTON = "location-button-go-to";
 
-export function manageDrawer(drawer: HTMLElement, activePointsContainer: HTMLElement, outputContainer: HTMLElement, model: Model, goToLocation: (location: Location) => void) {
+export function manageDrawer(drawer: HTMLElement, activePointsContainer: HTMLElement, outputContainer: HTMLElement, model: Model, goToLocation: (selectedLocation: SelectedLocation) => void) {
     model.subscribe((inputs, output) => {
         if (inputs.length === 0) {
             drawer.classList.add(HIDE_CLASS);
         } else {
             drawer.classList.remove(HIDE_CLASS);
             
-            activePointsContainer.innerHTML = inputs.map(input => renderLocation(input)).join("\n");
-            outputContainer.innerHTML = renderLocation(output!);
+            activePointsContainer.replaceChildren(...inputs.map((input, index) => renderLocation(input, index)));
+            outputContainer.replaceChildren(renderLocation(output!, undefined));
         }
     });
 
@@ -20,47 +21,24 @@ export function manageDrawer(drawer: HTMLElement, activePointsContainer: HTMLEle
             return;
         }
         
-        const button = ev.target.closest("." + GO_TO_BUTTON_CLASS);
+        const button = ev.target.closest("." + CLASS_GO_TO_BUTTON);
         if (button && drawer.contains(button)) {
-            goToLocation({
-                lat: parseFloat(button.getAttribute("data-latitude") || "0"),
-                long: parseFloat(button.getAttribute("data-longitude") || "0"),
-            });
+            const inputIndex = button.getAttribute("data-input-index");
+            if (inputIndex !== null) {
+                goToLocation(model.getInput(parseInt(inputIndex)));
+            } else if (button.getAttribute("data-output") !== null) {
+                goToLocation(model.getOutput()!);
+            }
         }
     });
 }
 
-function renderLocation(location: Location): string {
-    let latLong = "";
-    if (location.lat >= 0) {
-        latLong += location.lat.toFixed(2) + "°N, ";
-    } else {
-        latLong += (-location.lat).toFixed(2) + "°S, ";
-    }
-    if (location.long >= 0) {
-        latLong += location.long.toFixed(2) + "°E";
-    } else {
-        latLong += (-location.long).toFixed(2) + "°W";
-    }
+function renderLocation(location: Location, inputIndex: number | undefined): Node {
+    let latLong = formatLatLong(location);
     
     if (location.name) {
-        return locationTemplate(location.name, latLong, location);
+        return createLocationRow(location.name, latLong, inputIndex);
     } else {
-        return locationTemplate(latLong, null, location);
+        return createLocationRow(latLong, null, inputIndex);
     }
-}
-
-function locationTemplate(primary: string, secondary: string | null, location: Location): string {
-    let result = `<div class="location-row">
-        <div class="location-content">
-            <h3 class="location-primary" title="${primary}">${primary}</h3>`;
-    if (secondary) {
-        result += `<div class="location-secondary" title="${primary}">${secondary}</div>`;
-    }
-    result += `</div>
-            <div class="location-buttons">
-                <button class="location-button ${GO_TO_BUTTON_CLASS}" data-latitude="${location.lat}" data-longitude="${location.long}"><img src="/crosshairs-solid.svg"></button>
-            </div>
-        </div>`;
-    return result;
 }

@@ -5,6 +5,11 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Furthest point calculator</title>
+    <style>
+      body {
+        opacity: 0;
+      }
+    </style>
   </head>
   <body>
     <div id="map"></div>
@@ -17,6 +22,38 @@
         <div id="active-location-container"></div>
       </div>
     </div>
+    <template id="location-template">
+      <div class="location-row">
+        <div class="location-content">
+          <h3 class="location-primary"></h3>
+          <div class="location-secondary"></div>
+        </div>
+        <div class="location-buttons">
+            <button class="location-button location-button-go-to"><img src="/crosshairs-solid.svg"></button>
+        </div>
+      </div>
+    </template>
+    <template id="location-popup-template">
+      <div class="location-popup">
+        <div class="location-details">
+          <h3 class="location-primary"></h3>
+          <div class="location-secondary"></div>
+        </div>
+        <div class="location-popup-distances-container">
+          <h4 class="location-popup-distance-header">Distances</h4>
+          <div class="location-popup-distances"></div>
+        </div>
+        <div class="location-popup-buttons">
+          <button class="location-popup-button location-popup-button-add">+ Add</button>
+          <button class="location-popup-button location-popup-button-remove">Remove</button>
+        </div>
+      </div>
+    </template>
+    <template id="location-popup-distance-template">
+      <div class="location-popup-distance">
+        <span class="location-popup-distance-location"></span><span class="location-popup-distance-value"></span>
+      </div>
+    </template>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
