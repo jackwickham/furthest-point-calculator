@@ -6,6 +6,8 @@ import Geocoder from '@mapbox/mapbox-sdk/services/geocoding';
 import { Feature, Geometry } from 'geojson';
 import { Location, Model, SelectedLocation } from './model';
 import { LocationPopup, PopupMode } from './templates/locationPopup';
+import blueMarkerIconUrl from '../resources/mapbox-marker-icon-20px-blue.png';
+import redMarkerIconUrl from '../resources/mapbox-marker-icon-20px-red.png';
 
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_KEY; 
 const geocoderService = Geocoder({
@@ -35,8 +37,8 @@ export class MapView {
     }
 
     private async init() {
-        const blueImage = loadImage(this.map, "/mapbox-marker-icon-20px-blue.png");
-        const redImage = loadImage(this.map, "/mapbox-marker-icon-20px-red.png");
+        const blueImage = loadImage(this.map, blueMarkerIconUrl);
+        const redImage = loadImage(this.map, redMarkerIconUrl);
         this.map.addImage('blue-pin', await blueImage);
         this.map.addImage('red-pin', await redImage);
 
