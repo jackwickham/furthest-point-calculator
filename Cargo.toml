@@ -2,12 +2,11 @@
 name = "remote-point-calculator"
 version = "0.1.0"
 edition = "2021"
+repository = "https://github.com/jackwickham/furthest-point-calculator"
+license = "MIT"
 
 [lib]
-crate-type = ["cdylib", "rlib"]
+crate-type = ["cdylib"]
 
 [dependencies]
-console_error_panic_hook = "0.1.7"
 wasm-bindgen = "0.2.83"
-wee_alloc = "0.4.5"
-

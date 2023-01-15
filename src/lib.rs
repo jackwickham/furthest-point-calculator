@@ -1,9 +1,6 @@
 use std::{f32::consts::PI, collections::BinaryHeap};
 use wasm_bindgen::prelude::*;
 
-#[global_allocator]
-static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
-
 const R: f32 = 6371.0; // km
 
 #[wasm_bindgen]
