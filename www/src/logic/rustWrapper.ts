@@ -1,5 +1,5 @@
-import { Location } from "./model";
-import { Point, Points, find_most_distant_point, distance_between } from '../../pkg/remote_point_calculator'
+import { Location } from "../model";
+import { Point, Points, find_most_distant_point, distance_between } from '../../../pkg/remote_point_calculator'
 
 export async function computeFurthestPoint(inputs: Location[]): Promise<Location | undefined> {
     if (inputs.length === 0) {
@@ -20,5 +20,7 @@ export async function computeFurthestPoint(inputs: Location[]): Promise<Location
 };
 
 export async function distanceBetween(a: Location, b: Location): Promise<number> {
-    return distance_between(Point.create_degrees(a.lat, a.long), Point.create_degrees(b.lat, b.long));
+    return distance_between(
+        Point.create_degrees(a.lat, a.long),
+        Point.create_degrees(b.lat, b.long));
 }

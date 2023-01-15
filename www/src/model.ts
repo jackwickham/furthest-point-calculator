@@ -1,4 +1,4 @@
-import { computeFurthestPoint, distanceBetween } from "./calculator";
+import { Logic } from "./logic";
 
 export type SubscriberCallback = (inputs: Location[], output: Location | undefined) => void;
 
@@ -8,7 +8,7 @@ export class Model {
     private output: Location | undefined = undefined;
     private subscribers: SubscriberCallback[] = [];
 
-    public constructor() {}
+    public constructor(private readonly logic: Logic) {}
 
     public subscribe(callback: SubscriberCallback) {
         this.subscribers.push(callback);
@@ -42,13 +42,13 @@ export class Model {
     public async getDistances(location: Location): Promise<Map<Location, number>> {
         let result = new Map<Location, number>();
         for (let l of this.inputs) {
-            result.set(l, await distanceBetween(l, location));
+            result.set(l, await this.logic.distanceBetween(l, location));
         }
         return result;
     }
 
     private async update() {
-        this.output = await computeFurthestPoint(this.inputs);
+        this.output = await this.logic.computeFurthestPoint(this.inputs);
         for (let subscriber of this.subscribers) {
             subscriber(this.inputs, this.output);
         }
